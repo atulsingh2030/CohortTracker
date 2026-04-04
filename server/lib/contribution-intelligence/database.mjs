@@ -266,6 +266,20 @@ export function getContributionDatabasePath() {
   return resolveDatabasePath();
 }
 
+export function resetContributionDatabase() {
+  if (!database) {
+    return;
+  }
+
+  try {
+    database.close();
+  } catch {
+    // best-effort close for tests and short-lived scripts
+  }
+
+  database = null;
+}
+
 function runTransaction(work) {
   const db = getContributionDatabase();
 

@@ -26,7 +26,11 @@ import {
   formatWeekLabel,
 } from '../components/contribution-dashboard/formatters';
 import { buildApiUrl } from '../lib/apiBase';
-import { fetchContributionDashboardSummary, fetchContributorDetail } from '../lib/contributionDashboard';
+import {
+  fetchContributionDashboardSummary,
+  fetchContributorDetail,
+  getContributionDataMode,
+} from '../lib/contributionDashboard';
 import type {
   ContributorDetail,
   ContributorSummary,
@@ -37,6 +41,7 @@ import type {
 
 const HISTORY_WEEKS = 8;
 const REFRESH_INTERVAL_MS = 60_000;
+const CONTRIBUTION_DATA_MODE = getContributionDataMode();
 
 const ContributionDashboard: React.FC = () => {
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
@@ -141,7 +146,11 @@ const ContributionDashboard: React.FC = () => {
     [summary]
   );
 
-  const canTriggerSync = Boolean(summary && !summary.status.manualSyncRequiresSecret);
+  const canTriggerSync = Boolean(
+    summary
+    && CONTRIBUTION_DATA_MODE === 'api'
+    && !summary.status.manualSyncRequiresSecret
+  );
   const nextRunLabel = summary?.status.scheduler.nextRunAt
     ? formatLongDateTime(summary.status.scheduler.nextRunAt)
     : summary?.status.scheduler.started
@@ -247,7 +256,9 @@ const ContributionDashboard: React.FC = () => {
                     <RefreshCw size={16} className={syncLoading ? 'animate-spin' : ''} />
                     {syncLoading
                       ? 'Syncing...'
-                      : canTriggerSync
+                      : CONTRIBUTION_DATA_MODE === 'static'
+                        ? 'Update via GitHub Actions'
+                        : canTriggerSync
                         ? 'Run sync now'
                         : summary?.status.manualSyncSecretConfigured
                           ? 'Sync locked by secret'

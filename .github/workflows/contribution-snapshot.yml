@@ -1,0 +1,70 @@
+name: Contribution Snapshot
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 */6 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: contribution-snapshot-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  export-snapshot:
+    name: Export static contribution data
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GITHUB_REPOSITORIES: ${{ vars.GITHUB_REPOSITORIES }}
+      GITHUB_TOKEN: ${{ secrets.CONTRIBUTION_GITHUB_TOKEN }}
+      CONTRIBUTION_DATABASE_PATH: ${{ runner.temp }}/contribution-intelligence.sqlite
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Validate required configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [ -z "${GITHUB_REPOSITORIES:-}" ]; then
+            echo "Repository variable GITHUB_REPOSITORIES is required."
+            exit 1
+          fi
+
+          if [ -z "${GITHUB_TOKEN:-}" ]; then
+            echo "Repository secret CONTRIBUTION_GITHUB_TOKEN is required."
+            exit 1
+          fi
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Export contribution snapshot
+        run: node scripts/export-contribution-snapshot.mjs
+
+      - name: Commit generated snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if git diff --quiet -- public/contribution-data/latest; then
+            echo "No snapshot changes detected."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/contribution-data/latest
+          git commit -m "chore: update contribution snapshot"
+          git push

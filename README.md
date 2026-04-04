@@ -39,6 +39,7 @@ The scoring model is configurable through JSON so teams can tune the weights wit
 - daily snapshot storage in SQLite
 - scheduled sync with `node-cron`
 - manual sync endpoint for local and server-side triggering
+- GitHub Actions snapshot export for static frontend deployments
 - React dashboard UI plus Express backend
 
 ## Who It Is For
@@ -80,6 +81,12 @@ VITE_API_BASE_URL=https://your-api-host.example.com
 
 If `VITE_API_BASE_URL` is missing in a split deploy, the frontend will call `/api/...` on itself and fail with `404`.
 
+If you want a GitHub-only frontend data path, leave `VITE_API_BASE_URL` unset and set:
+
+```bash
+VITE_CONTRIBUTION_DATA_MODE=static
+```
+
 ## Configuration
 
 Main config files:
@@ -96,6 +103,8 @@ Useful environment variables:
 - `CONTRIBUTION_LOOKBACK_DAYS`
 - `CONTRIBUTION_SYNC_SECRET`
 - `ALLOWED_ORIGINS`
+- `VITE_CONTRIBUTION_DATA_MODE`
+- `VITE_CONTRIBUTION_SNAPSHOT_BASE_URL`
 
 ## API Surface
 
@@ -125,6 +134,31 @@ Important deployment note:
 - the backend should run on a persistent host such as Render or Railway
 - set `VITE_API_BASE_URL` in Vercel to the deployed backend URL
 - set `ALLOWED_ORIGINS` on the backend to your Vercel domain
+
+## GitHub Actions Snapshot Mode
+
+If you want the frontend to work without a live backend, this repo now supports static contribution snapshots.
+
+Setup:
+
+1. In GitHub repo settings, add a repository variable:
+   - `GITHUB_REPOSITORIES=owner-one/repo-one,owner-two/repo-two`
+2. Add a repository secret:
+   - `CONTRIBUTION_GITHUB_TOKEN=github_pat_xxx`
+3. Deploy the frontend with:
+   - `VITE_CONTRIBUTION_DATA_MODE=static`
+4. Run the `Contribution Snapshot` workflow once to generate `public/contribution-data/latest/*.json`
+
+How to manually trigger it:
+
+1. Open your repository on GitHub
+2. Click `Actions`
+3. Click `Contribution Snapshot`
+4. Click `Run workflow`
+5. Select the branch
+6. Click `Run workflow` again
+
+After the workflow finishes, the repo gets updated snapshot JSON files and your frontend will show the latest synced contribution data from that run.
 
 ## Validation
 

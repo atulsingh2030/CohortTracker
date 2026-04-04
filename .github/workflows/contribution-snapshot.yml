@@ -20,11 +20,12 @@ jobs:
     env:
       GITHUB_REPOSITORIES: ${{ vars.GITHUB_REPOSITORIES }}
       GITHUB_TOKEN: ${{ secrets.CONTRIBUTION_GITHUB_TOKEN }}
-      CONTRIBUTION_DATABASE_PATH: ${{ runner.temp }}/contribution-intelligence.sqlite
 
     steps:
       - name: Checkout code
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.ref_name }}
 
       - name: Set up Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
@@ -51,7 +52,7 @@ jobs:
         run: npm ci
 
       - name: Export contribution snapshot
-        run: node scripts/export-contribution-snapshot.mjs
+        run: CONTRIBUTION_DATABASE_PATH="$RUNNER_TEMP/contribution-intelligence.sqlite" node scripts/export-contribution-snapshot.mjs
 
       - name: Commit generated snapshot
         shell: bash
@@ -67,4 +68,4 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add public/contribution-data/latest
           git commit -m "chore: update contribution snapshot"
-          git push
+          git push origin HEAD:${GITHUB_REF_NAME}

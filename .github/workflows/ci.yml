@@ -1,0 +1,72 @@
+name: CI Checks
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  basic-checks:
+    name: Build, test, and code hygiene
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build app
+        run: npm run build
+
+      - name: Run tests
+        run: npm test
+
+      - name: Fail if TODOs are present in app code
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          scan_paths=()
+          for path in src server scripts; do
+            if [ -d "$path" ]; then
+              scan_paths+=("$path")
+            fi
+          done
+
+          if [ "${#scan_paths[@]}" -eq 0 ]; then
+            echo "No app code directories found to scan"
+            exit 0
+          fi
+
+          set +e
+          grep -RIn "TODO" "${scan_paths[@]}"
+          grep_status=$?
+          set -e
+
+          if [ "$grep_status" -eq 0 ]; then
+            echo "Found TODOs in app code"
+            exit 1
+          fi
+
+          if [ "$grep_status" -eq 1 ]; then
+            echo "No TODOs found in app code"
+            exit 0
+          fi
+
+          echo "TODO scan failed with grep exit code $grep_status"
+          exit "$grep_status"

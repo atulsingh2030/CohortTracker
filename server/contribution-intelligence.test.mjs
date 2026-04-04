@@ -1,15 +1,16 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import os from 'node:os';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-const TEST_DATABASE_PATH = path.join(process.cwd(), 'server', 'data', `contribution-intelligence-test-${process.pid}.sqlite`);
+const TEST_DATABASE_PATH = path.join(os.tmpdir(), `contribution-intelligence-test-${process.pid}.sqlite`);
 
 process.env.CONTRIBUTION_DATABASE_PATH = TEST_DATABASE_PATH;
 process.env.GITHUB_REPOSITORIES = 'acme/rocket,acme/orbit';
 
 const [
-  { replaceContributionWindow },
+  { replaceContributionWindow, resetContributionDatabase },
   { computeContributionScore },
   { getContributionDashboardSummary, getContributorDetail },
   { getContributionConfigStatus },
@@ -25,12 +26,14 @@ const [
 ]);
 
 test.after(() => {
+  resetContributionDatabase();
   delete process.env.CONTRIBUTION_DATABASE_PATH;
   delete process.env.GITHUB_REPOSITORIES;
   safeRemove(TEST_DATABASE_PATH);
 });
 
 test('dashboard summary ranks merged PR ownership above commit volume', async () => {
+  resetContributionDatabase();
   safeRemove(TEST_DATABASE_PATH);
 
   const repositories = [
@@ -129,12 +132,14 @@ test('dashboard summary ranks merged PR ownership above commit volume', async ()
 });
 
 test('empty repositories are skipped instead of failing sync', () => {
+  resetContributionDatabase();
   assert.equal(shouldTreatAsEmptyResult(409, 'Git Repository is empty'), true);
   assert.equal(shouldTreatAsEmptyResult(409, 'Something else'), false);
   assert.equal(shouldTreatAsEmptyResult(404, 'Git Repository is empty'), false);
 });
 
 test('manual sync status depends on sync secret configuration, not production mode alone', () => {
+  resetContributionDatabase();
   const originalSecret = process.env.CONTRIBUTION_SYNC_SECRET;
 
   delete process.env.CONTRIBUTION_SYNC_SECRET;

@@ -4,14 +4,14 @@ import os from 'node:os';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-const TEST_DATABASE_PATH = path.join(process.cwd(), 'server', 'data', `contribution-intelligence-export-test-${process.pid}.sqlite`);
+const TEST_DATABASE_PATH = path.join(os.tmpdir(), `contribution-intelligence-export-test-${process.pid}.sqlite`);
 const TEST_OUTPUT_DIR = path.join(os.tmpdir(), `cohorttracker-export-${process.pid}`);
 
 process.env.CONTRIBUTION_DATABASE_PATH = TEST_DATABASE_PATH;
 process.env.GITHUB_REPOSITORIES = 'acme/rocket,acme/orbit';
 
 const [
-  { replaceContributionWindow },
+  { replaceContributionWindow, resetContributionDatabase },
   { computeContributionScore },
   { exportContributionSnapshot },
   { subtractDays, toDateKey },
@@ -23,6 +23,7 @@ const [
 ]);
 
 test.after(() => {
+  resetContributionDatabase();
   delete process.env.CONTRIBUTION_DATABASE_PATH;
   delete process.env.GITHUB_REPOSITORIES;
   safeRemove(TEST_DATABASE_PATH);
@@ -30,6 +31,7 @@ test.after(() => {
 });
 
 test('exportContributionSnapshot writes summary and per-user detail files', async () => {
+  resetContributionDatabase();
   safeRemove(TEST_DATABASE_PATH);
   safeRemove(TEST_OUTPUT_DIR);
 

@@ -20,44 +20,79 @@ const BarChart = ({
   emptyLabel = 'No contribution history yet.',
 }: BarChartProps) => {
   const maxValue = Math.max(...items.map((item) => item.value), 0);
+  const totalValue = items.reduce((sum, item) => sum + item.value, 0);
+  const peakItem = items.reduce<BarChartItem | null>((best, item) => {
+    if (!best || item.value > best.value) {
+      return item;
+    }
+
+    return best;
+  }, null);
 
   return (
-    <div className="rounded-[28px] border border-white/10 bg-white/[0.03] p-5">
-      <div className="flex items-start justify-between gap-3">
+    <div className="rounded-[30px] border border-white/8 bg-[#0b1727]/78 p-5">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h3 className="text-lg font-semibold text-white">{title}</h3>
-          <p className="mt-1 text-sm text-white/55">{subtitle}</p>
+          <p className="mt-1 max-w-xl text-sm leading-6 text-slate-400">{subtitle}</p>
         </div>
-        <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase tracking-[0.2em] text-white/45">
-          {items.length} bins
-        </span>
+        <div className="grid grid-cols-2 gap-2 text-right text-xs uppercase tracking-[0.18em] text-slate-500">
+          <div className="rounded-2xl border border-white/8 bg-[#07111d]/90 px-3 py-2">
+            <p>Peak</p>
+            <p className="mt-2 text-sm font-semibold tracking-normal text-white">
+              {peakItem ? peakItem.value.toFixed(peakItem.value % 1 === 0 ? 0 : 1) : '0'}
+            </p>
+            <p className="mt-1 truncate text-[11px] tracking-normal text-slate-500">{peakItem?.label || 'No peak'}</p>
+          </div>
+          <div className="rounded-2xl border border-white/8 bg-[#07111d]/90 px-3 py-2">
+            <p>Total</p>
+            <p className="mt-2 text-sm font-semibold tracking-normal text-white">
+              {totalValue.toFixed(totalValue % 1 === 0 ? 0 : 1)}
+            </p>
+            <p className="mt-1 text-[11px] tracking-normal text-slate-500">{items.length} buckets</p>
+          </div>
+        </div>
       </div>
 
       {items.length === 0 || maxValue === 0 ? (
-        <div className="mt-6 rounded-2xl border border-dashed border-white/10 bg-black/10 px-4 py-8 text-center text-sm text-white/45">
+        <div className="mt-6 rounded-[24px] border border-dashed border-white/10 bg-[#07111d]/90 px-4 py-8 text-center text-sm text-slate-500">
           {emptyLabel}
         </div>
       ) : (
-        <div className="mt-6 grid grid-cols-4 gap-3 sm:grid-cols-8">
-          {items.map((item) => {
-            const height = Math.max((item.value / maxValue) * 100, item.value > 0 ? 12 : 0);
+        <div className="mt-6 overflow-hidden rounded-[24px] border border-white/8 bg-[#07111d]/90 px-3 py-5 sm:px-4">
+          <div className="relative">
+            <div className="pointer-events-none absolute inset-0 grid grid-rows-4">
+              {[0, 1, 2, 3].map((row) => (
+                <div key={row} className="border-b border-dashed border-white/[0.05]" />
+              ))}
+            </div>
+            <div className="relative flex items-end gap-2 sm:gap-3">
+              {items.map((item) => {
+                const height = Math.max((item.value / maxValue) * 100, item.value > 0 ? 10 : 0);
 
-            return (
-              <div key={`${item.label}-${item.footnote || ''}`} className="flex min-h-[170px] flex-col justify-end gap-3">
-                <div className="relative flex-1 rounded-[20px] border border-white/6 bg-black/15 p-2">
-                  <div
-                    className={`absolute inset-x-2 bottom-2 rounded-[14px] bg-gradient-to-t ${accent} shadow-[0_12px_30px_-18px_rgba(251,146,60,0.9)]`}
-                    style={{ height: `${height}%` }}
-                  />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-white">{item.value.toFixed(item.value % 1 === 0 ? 0 : 1)}</p>
-                  <p className="text-xs text-white/45">{item.label}</p>
-                  {item.footnote ? <p className="text-[11px] text-white/30">{item.footnote}</p> : null}
-                </div>
-              </div>
-            );
-          })}
+                return (
+                  <div key={`${item.label}-${item.footnote || ''}`} className="flex min-w-0 flex-1 flex-col justify-end gap-3">
+                    <div className="relative flex h-40 items-end rounded-[18px] border border-white/6 bg-white/[0.03] p-1.5 sm:h-44 sm:p-2">
+                      <div className="absolute inset-x-2 top-2 h-2 rounded-full bg-white/[0.04]" />
+                      <div
+                        className={`w-full rounded-[12px] bg-gradient-to-t ${accent} shadow-[0_18px_34px_-18px_rgba(56,189,248,0.45)] transition duration-300`}
+                        style={{ height: `${height}%` }}
+                      />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-center text-xs font-medium text-white sm:text-sm">
+                        {item.value.toFixed(item.value % 1 === 0 ? 0 : 1)}
+                      </p>
+                      <p className="truncate text-center text-[10px] text-slate-400 sm:text-xs">{item.label}</p>
+                      {item.footnote ? (
+                        <p className="hidden truncate text-center text-[11px] leading-4 text-slate-500 sm:block">{item.footnote}</p>
+                      ) : null}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
       )}
     </div>

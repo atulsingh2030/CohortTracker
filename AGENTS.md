@@ -1,25 +1,31 @@
-# SUNNY AGENT OPERATING RULES
+# COHORTTRACKER AGENT OPERATING RULES
 
 This repository is wired for Codex and other agentic coding tools.
-Read this file before doing any work in `C:\Projects\Sunny`.
+Read this file before doing any work in `C:\Projects\CohortTracker`.
 
-## Sunny Notes
+## CohortTracker Notes
 
-- Repo root: `C:\Projects\Sunny`
+- Repo root: `C:\Projects\CohortTracker`
+- Product: contribution intelligence dashboard for a small engineering cohort
 - Live repo skill system: `.agents/skills/<skill-name>/SKILL.md`
 - Bootstrap bundle: `codex_initiate/` is reference material, not the live source of truth
-- Legacy workflow docs: `.agent/workflows/` are historical inputs that have been mirrored into `.agents/skills/`
-- Agent factory dependencies currently live in `C:\Projects\PromptGenerator`
+- Legacy workflow docs under `.agent/` are reference only if present
 
-Required external context for the Sunny flows:
-- `C:\Projects\PromptGenerator\research\agentic-skills-research.md`
-- `C:\Projects\PromptGenerator\prompts\meta-agent-input-enricher-agent-prompt.md`
-- `C:\Projects\PromptGenerator\prompts\meta-agent-architect-prompt.md`
-- `C:\Projects\Sunny\byok-productization-architect-agent-prompt.md`
+## User Operating Rules
+
+These rules are mandatory for work in this repository.
+
+1. Use repo skills explicitly for every task.
+2. State the exact skill and the exact next step before running commands, edits, browser actions, or tests.
+3. Do not perform silent background actions, exploratory launches, or "quick test" behavior without first stating the action.
+4. Make verified claims only. Product, UI, and runtime statements must be backed by direct evidence such as code inspection, command output, screenshots, or browser verification.
+5. Prefer practical fixes over research or process theater. Do not default to research unless the user explicitly asks for it.
+6. When something is not verified, say so plainly instead of implying completion.
+7. Do not modify or rely on `C:\Projects\Sunny` for this project unless the user explicitly asks. Work from `C:\Projects\CohortTracker`.
 
 ## Skill Gate
 
-Before planning, coding, debugging, researching, or deploying:
+Before planning, coding, debugging, researching, testing, or deploying:
 
 1. Read this file.
 2. Route the task to a skill name using the routing table below.
@@ -48,11 +54,14 @@ Always prefer a project skill over a global skill when both exist.
 | Planning | plan, roadmap, strategy, architect, approach | planning |
 | Implementation | build, write, create, implement, code | implementation |
 | Debugging | bug, failing, broken, error, crash | debugging |
+| Research | research, compare, inspect, investigate, verify | research |
+| Documentation | docs, README, explain, write down | documentation |
+| Code Review | review, audit, quality | code-reviewer |
+| Visual QA | qa, screenshot, responsive, layout, browser | browser-qa |
+| Local Web Testing | local app, localhost, interaction test, playwright | webapp-testing |
 | Agent Generation | generate-agent, prompt factory, enrich brief, create agent prompt | generate-agent |
 | BYOK Productization | command-agent, productize agent, saas blueprint, command centre injection | command-agent |
-| Agent Deployment | deploy-agent, railway, live URL, register deployment | deploy-agent |
-| Documentation | docs, README, explain, write down | documentation |
-| Research | research, compare, inspect, investigate | research |
+| Agent Deployment | deploy-agent, railway, render, vercel, live URL, register deployment | deploy-agent |
 
 If multiple skills match, use the primary skill first and validate its output before chaining.
 
@@ -95,7 +104,7 @@ Awaiting input before proceeding.
 ## Repo Structure
 
 ```text
-C:\Projects\Sunny\
+C:\Projects\CohortTracker\
   AGENTS.md
   README.md
   .agents\
@@ -107,15 +116,13 @@ C:\Projects\Sunny\
         SKILL.md
       debugging\
         SKILL.md
-      generate-agent\
+      research\
         SKILL.md
-      command-agent\
-        SKILL.md
-      deploy-agent\
+      documentation\
         SKILL.md
 ```
 
 ## Operating Rule
 
-In Sunny, `.agents/skills/` is the contract and `.agent/workflows/` is reference only.
-If both exist, prefer `.agents/skills/`.
+In CohortTracker, `.agents/skills/` is the contract.
+If a copied rule or note still references `Sunny`, treat it as stale and update or ignore it before proceeding.

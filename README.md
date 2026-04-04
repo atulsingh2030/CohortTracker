@@ -94,4 +94,5 @@ npm run build
 
 - `docs/` contains the strategy and architecture artifacts created during the repo-launch-pages pivot.
 - `contributions.md` explains how to add future templates without breaking the shared generation contract.
-- `supratikspace/` is now just the old nested copy after the Git repo was re-rooted to `C:\Projects\Sunny`.
+- `CohortTracker` is now the standalone repo for the contribution dashboard.
+- Any older `Sunny` or `supratikspace` references should be treated as legacy copy, not current repo structure.

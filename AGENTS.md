@@ -3,13 +3,12 @@
 This repository is wired for Codex and other agentic coding tools.
 Read this file before doing any work in `C:\Projects\CohortTracker`.
 
-## CohortTracker Notes
+## Repo Notes
 
 - Repo root: `C:\Projects\CohortTracker`
-- Product: contribution intelligence dashboard for a small engineering cohort
+- Product: GitHub contribution intelligence dashboard for small teams and cohorts
 - Live repo skill system: `.agents/skills/<skill-name>/SKILL.md`
-- Bootstrap bundle: `codex_initiate/` is reference material, not the live source of truth
-- Legacy workflow docs under `.agent/` are reference only if present
+- Work only in `C:\Projects\CohortTracker`, never in `C:\Projects\Sunny` unless explicitly asked
 
 ## User Operating Rules
 
@@ -25,7 +24,7 @@ These rules are mandatory for work in this repository.
 
 ## Skill Gate
 
-Before planning, coding, debugging, researching, testing, or deploying:
+Before planning, coding, debugging, testing, reviewing, or editing docs:
 
 1. Read this file.
 2. Route the task to a skill name using the routing table below.
@@ -51,19 +50,13 @@ Always prefer a project skill over a global skill when both exist.
 
 | Task Type | Trigger Keywords | Skill Name |
 | --- | --- | --- |
-| Planning | plan, roadmap, strategy, architect, approach | planning |
-| Implementation | build, write, create, implement, code | implementation |
+| Planning | plan, roadmap, strategy, approach | planning |
+| Implementation | build, write, create, implement, code, refactor, cleanup | implementation |
 | Debugging | bug, failing, broken, error, crash | debugging |
-| Research | research, compare, inspect, investigate, verify | research |
 | Documentation | docs, README, explain, write down | documentation |
 | Code Review | review, audit, quality | code-reviewer |
 | Visual QA | qa, screenshot, responsive, layout, browser | browser-qa |
 | Local Web Testing | local app, localhost, interaction test, playwright | webapp-testing |
-| Agent Generation | generate-agent, prompt factory, enrich brief, create agent prompt | generate-agent |
-| BYOK Productization | command-agent, productize agent, saas blueprint, command centre injection | command-agent |
-| Agent Deployment | deploy-agent, railway, render, vercel, live URL, register deployment | deploy-agent |
-
-If multiple skills match, use the primary skill first and validate its output before chaining.
 
 ## Execution Trace
 
@@ -101,28 +94,6 @@ Options: <option A> | <option B>
 Awaiting input before proceeding.
 ```
 
-## Repo Structure
-
-```text
-C:\Projects\CohortTracker\
-  AGENTS.md
-  README.md
-  .agents\
-    skill_template.md
-    skills\
-      planning\
-        SKILL.md
-      implementation\
-        SKILL.md
-      debugging\
-        SKILL.md
-      research\
-        SKILL.md
-      documentation\
-        SKILL.md
-```
-
 ## Operating Rule
 
-In CohortTracker, `.agents/skills/` is the contract.
-If a copied rule or note still references `Sunny`, treat it as stale and update or ignore it before proceeding.
+In CohortTracker, `.agents/skills/` is the contract. If a copied note still references unrelated products, treat it as stale and remove or ignore it.

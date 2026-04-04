@@ -10,6 +10,18 @@ interface LeaderboardTableProps {
   statusLabel?: string;
 }
 
+function getRankBadgeClasses(rank: number) {
+  if (rank === 1) {
+    return 'border-amber-300/25 bg-amber-300/12 text-amber-100';
+  }
+
+  if (rank <= 3) {
+    return 'border-cyan-300/20 bg-cyan-300/10 text-cyan-100';
+  }
+
+  return 'border-white/10 bg-white/[0.04] text-slate-300';
+}
+
 const LeaderboardTable = ({
   entries,
   selectedUsername,
@@ -65,13 +77,7 @@ const LeaderboardTable = ({
                       <p className="truncate text-xs text-slate-500">@{entry.username}</p>
                     </div>
                   </div>
-                  <span className={`inline-flex shrink-0 rounded-full border px-3 py-1 text-xs font-semibold ${
-                    entry.rank === 1
-                      ? 'border-amber-300/25 bg-amber-300/12 text-amber-100'
-                      : entry.rank <= 3
-                        ? 'border-cyan-300/20 bg-cyan-300/10 text-cyan-100'
-                        : 'border-white/10 bg-white/[0.04] text-slate-300'
-                  }`}>
+                  <span className={`inline-flex shrink-0 rounded-full border px-3 py-1 text-xs font-semibold ${getRankBadgeClasses(entry.rank)}`}>
                     #{entry.rank}
                   </span>
                 </div>
@@ -97,8 +103,8 @@ const LeaderboardTable = ({
                 <th className="px-4 py-3">Contributor</th>
                 <th className="px-4 py-3">Score</th>
                 <th className="px-4 py-3">Merged PRs</th>
-                <th className="px-4 py-3 xl:table-cell">Issues Closed</th>
-                <th className="px-4 py-3 xl:table-cell">Reviews</th>
+                <th className="hidden px-4 py-3 xl:table-cell">Issues Closed</th>
+                <th className="hidden px-4 py-3 xl:table-cell">Reviews</th>
                 <th className="px-4 py-3">Last Seen</th>
               </tr>
             </thead>
@@ -111,15 +117,19 @@ const LeaderboardTable = ({
                     key={entry.username}
                     className={`cursor-pointer transition ${isSelected ? 'bg-cyan-400/[0.08]' : 'hover:bg-white/[0.03]'}`}
                     onClick={() => onSelect(entry.username)}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        onSelect(entry.username);
+                      }
+                    }}
+                    tabIndex={0}
+                    role="button"
+                    aria-pressed={isSelected}
+                    aria-label={`Select ${entry.displayName}`}
                   >
                     <td className="px-4 py-4">
-                      <span className={`inline-flex min-w-[3.25rem] items-center justify-center rounded-full border px-3 py-1 text-xs font-semibold ${
-                        entry.rank === 1
-                          ? 'border-amber-300/25 bg-amber-300/12 text-amber-100'
-                          : entry.rank <= 3
-                            ? 'border-cyan-300/20 bg-cyan-300/10 text-cyan-100'
-                            : 'border-white/10 bg-white/[0.04] text-slate-300'
-                      }`}>
+                      <span className={`inline-flex min-w-[3.25rem] items-center justify-center rounded-full border px-3 py-1 text-xs font-semibold ${getRankBadgeClasses(entry.rank)}`}>
                         #{entry.rank}
                       </span>
                     </td>

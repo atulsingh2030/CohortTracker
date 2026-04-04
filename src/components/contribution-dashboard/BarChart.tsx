@@ -67,11 +67,11 @@ const BarChart = ({
               ))}
             </div>
             <div className="relative flex items-end gap-2 sm:gap-3">
-              {items.map((item) => {
+              {items.map((item, index) => {
                 const height = Math.max((item.value / maxValue) * 100, item.value > 0 ? 10 : 0);
 
                 return (
-                  <div key={`${item.label}-${item.footnote || ''}`} className="flex min-w-0 flex-1 flex-col justify-end gap-3">
+                  <div key={`${item.label}-${item.footnote || ''}-${index}`} className="flex min-w-0 flex-1 flex-col justify-end gap-3">
                     <div className="relative flex h-40 items-end rounded-[18px] border border-white/6 bg-white/[0.03] p-1.5 sm:h-44 sm:p-2">
                       <div className="absolute inset-x-2 top-2 h-2 rounded-full bg-white/[0.04]" />
                       <div

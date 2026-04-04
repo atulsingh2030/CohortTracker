@@ -19,10 +19,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: 24
           cache: npm
@@ -53,9 +53,20 @@ jobs:
             exit 0
           fi
 
-          if grep -RIn "TODO" "${scan_paths[@]}"; then
+          set +e
+          grep -RIn "TODO" "${scan_paths[@]}"
+          grep_status=$?
+          set -e
+
+          if [ "$grep_status" -eq 0 ]; then
             echo "Found TODOs in app code"
             exit 1
-          else
-            echo "No TODOs found in app code"
           fi
+
+          if [ "$grep_status" -eq 1 ]; then
+            echo "No TODOs found in app code"
+            exit 0
+          fi
+
+          echo "TODO scan failed with grep exit code $grep_status"
+          exit "$grep_status"

@@ -62,7 +62,7 @@ export function getContributionConfig({ forceReload = false } = {}) {
       usingLocalOverride: fs.existsSync(LOCAL_CONFIG_PATH),
       usingEnvRepositories: Boolean(envRepositories.length),
       hasGitHubToken: Boolean(process.env.GITHUB_TOKEN),
-      syncSecretConfigured: Boolean(process.env.CONTRIBUTION_SYNC_SECRET),
+      syncSecretConfigured: isManualSyncSecretRequired(),
     },
   };
 
@@ -74,6 +74,7 @@ export function getContributionConfig({ forceReload = false } = {}) {
 
 export function getContributionConfigStatus() {
   const config = getContributionConfig();
+  const manualSyncSecretConfigured = isManualSyncSecretRequired();
 
   return {
     configured: config.repositories.length > 0,
@@ -84,10 +85,18 @@ export function getContributionConfigStatus() {
     localOverridePath: config.meta.localOverridePath,
     usingLocalOverride: config.meta.usingLocalOverride,
     usingEnvRepositories: config.meta.usingEnvRepositories,
-    manualSyncRequiresSecret: process.env.NODE_ENV === 'production',
-    manualSyncSecretConfigured: config.meta.syncSecretConfigured,
+    manualSyncRequiresSecret: manualSyncSecretConfigured,
+    manualSyncSecretConfigured,
     sync: config.sync,
   };
+}
+
+export function getContributionSyncSecret() {
+  return `${process.env.CONTRIBUTION_SYNC_SECRET || ''}`.trim();
+}
+
+export function isManualSyncSecretRequired() {
+  return Boolean(getContributionSyncSecret());
 }
 
 function readStatKey() {
@@ -96,9 +105,11 @@ function readStatKey() {
   const envKey = [
     process.env.GITHUB_REPOSITORIES || '',
     process.env.CONTRIBUTION_REPOSITORIES || '',
+    process.env.GITHUB_TOKEN || '',
     process.env.CONTRIBUTION_SYNC_CRON || '',
     process.env.CONTRIBUTION_SYNC_TIMEZONE || '',
     process.env.CONTRIBUTION_LOOKBACK_DAYS || '',
+    process.env.CONTRIBUTION_SYNC_SECRET || '',
   ].join('|');
 
   return `${baseMtime}|${localMtime}|${envKey}`;

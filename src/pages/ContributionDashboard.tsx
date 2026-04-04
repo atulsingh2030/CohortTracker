@@ -26,7 +26,11 @@ import {
   formatWeekLabel,
 } from '../components/contribution-dashboard/formatters';
 import { buildApiUrl } from '../lib/apiBase';
-import { fetchContributionDashboardSummary, fetchContributorDetail } from '../lib/contributionDashboard';
+import {
+  fetchContributionDashboardSummary,
+  fetchContributorDetail,
+  getContributionDataMode,
+} from '../lib/contributionDashboard';
 import type {
   ContributorDetail,
   ContributorSummary,
@@ -37,6 +41,7 @@ import type {
 
 const HISTORY_WEEKS = 8;
 const REFRESH_INTERVAL_MS = 60_000;
+const CONTRIBUTION_DATA_MODE = getContributionDataMode();
 
 const ContributionDashboard: React.FC = () => {
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
@@ -141,7 +146,11 @@ const ContributionDashboard: React.FC = () => {
     [summary]
   );
 
-  const canTriggerSync = Boolean(summary && !summary.status.manualSyncRequiresSecret);
+  const canTriggerSync = Boolean(
+    summary
+    && CONTRIBUTION_DATA_MODE === 'api'
+    && !summary.status.manualSyncRequiresSecret
+  );
   const nextRunLabel = summary?.status.scheduler.nextRunAt
     ? formatLongDateTime(summary.status.scheduler.nextRunAt)
     : summary?.status.scheduler.started
@@ -245,7 +254,15 @@ const ContributionDashboard: React.FC = () => {
                     className="inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-4 py-2.5 text-sm font-medium text-cyan-50 transition hover:bg-cyan-300/15 disabled:cursor-not-allowed disabled:opacity-55"
                   >
                     <RefreshCw size={16} className={syncLoading ? 'animate-spin' : ''} />
-                    {syncLoading ? 'Syncing...' : canTriggerSync ? 'Run sync now' : 'Sync is server-managed'}
+                    {syncLoading
+                      ? 'Syncing...'
+                      : CONTRIBUTION_DATA_MODE === 'static'
+                        ? 'Update via GitHub Actions'
+                        : canTriggerSync
+                        ? 'Run sync now'
+                        : summary?.status.manualSyncSecretConfigured
+                          ? 'Sync locked by secret'
+                          : 'Sync unavailable'}
                   </button>
                   <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-slate-400">
                     {summary?.status.hasGitHubToken ? 'Authenticated API access' : 'Public API mode'}

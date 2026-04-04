@@ -12,12 +12,14 @@ const [
   { replaceContributionWindow },
   { computeContributionScore },
   { getContributionDashboardSummary, getContributorDetail },
+  { getContributionConfigStatus },
   { subtractDays, toDateKey },
   { shouldTreatAsEmptyResult },
 ] = await Promise.all([
   import('./lib/contribution-intelligence/database.mjs'),
   import('./lib/contribution-intelligence/scoring.mjs'),
   import('./lib/contribution-intelligence/service.mjs'),
+  import('./lib/contribution-intelligence/config.mjs'),
   import('./lib/contribution-intelligence/dates.mjs'),
   import('./lib/contribution-intelligence/github-sync.mjs'),
 ]);
@@ -130,6 +132,26 @@ test('empty repositories are skipped instead of failing sync', () => {
   assert.equal(shouldTreatAsEmptyResult(409, 'Git Repository is empty'), true);
   assert.equal(shouldTreatAsEmptyResult(409, 'Something else'), false);
   assert.equal(shouldTreatAsEmptyResult(404, 'Git Repository is empty'), false);
+});
+
+test('manual sync status depends on sync secret configuration, not production mode alone', () => {
+  const originalSecret = process.env.CONTRIBUTION_SYNC_SECRET;
+
+  delete process.env.CONTRIBUTION_SYNC_SECRET;
+  let status = getContributionConfigStatus();
+  assert.equal(status.manualSyncRequiresSecret, false);
+  assert.equal(status.manualSyncSecretConfigured, false);
+
+  process.env.CONTRIBUTION_SYNC_SECRET = 'top-secret';
+  status = getContributionConfigStatus();
+  assert.equal(status.manualSyncRequiresSecret, true);
+  assert.equal(status.manualSyncSecretConfigured, true);
+
+  if (originalSecret === undefined) {
+    delete process.env.CONTRIBUTION_SYNC_SECRET;
+  } else {
+    process.env.CONTRIBUTION_SYNC_SECRET = originalSecret;
+  }
 });
 
 function safeRemove(filePath) {

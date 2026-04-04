@@ -245,7 +245,13 @@ const ContributionDashboard: React.FC = () => {
                     className="inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-4 py-2.5 text-sm font-medium text-cyan-50 transition hover:bg-cyan-300/15 disabled:cursor-not-allowed disabled:opacity-55"
                   >
                     <RefreshCw size={16} className={syncLoading ? 'animate-spin' : ''} />
-                    {syncLoading ? 'Syncing...' : canTriggerSync ? 'Run sync now' : 'Sync is server-managed'}
+                    {syncLoading
+                      ? 'Syncing...'
+                      : canTriggerSync
+                        ? 'Run sync now'
+                        : summary?.status.manualSyncSecretConfigured
+                          ? 'Sync locked by secret'
+                          : 'Sync unavailable'}
                   </button>
                   <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-slate-400">
                     {summary?.status.hasGitHubToken ? 'Authenticated API access' : 'Public API mode'}

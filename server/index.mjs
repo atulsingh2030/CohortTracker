@@ -9,6 +9,7 @@ import {
   initializeContributionIntelligence,
   syncContributionData,
 } from './lib/contribution-intelligence/service.mjs';
+import { getContributionSyncSecret } from './lib/contribution-intelligence/config.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -85,7 +86,7 @@ app.get('/api/contribution-intelligence/users/:username', async (request, respon
 app.post('/api/contribution-intelligence/sync', async (request, response) => {
   if (!canTriggerContributionSync(request)) {
     response.status(403).json({
-      error: 'Contribution sync is locked down. Configure CONTRIBUTION_SYNC_SECRET or use development mode.',
+      error: 'Contribution sync requires the configured X-Sync-Secret header.',
     });
     return;
   }
@@ -112,13 +113,13 @@ app.listen(port, () => {
 });
 
 function canTriggerContributionSync(request) {
-  const configuredSecret = process.env.CONTRIBUTION_SYNC_SECRET;
+  const configuredSecret = getContributionSyncSecret();
 
   if (configuredSecret) {
     return request.get('x-sync-secret') === configuredSecret;
   }
 
-  return process.env.NODE_ENV !== 'production';
+  return true;
 }
 
 function applyCorsHeaders(request, response) {

@@ -63,7 +63,7 @@ npm install
 npm run dev
 ```
 
-Frontend runs through Vite. The API runs through `server/index.mjs`.
+Frontend runs through Vite on `http://localhost:5173`. The API runs through `server/index.mjs` on `http://localhost:3001`.
 
 Copy `.env.example` to `.env` and set at least:
 
@@ -77,6 +77,8 @@ If the frontend is served from a different origin than the API, also set:
 ```bash
 VITE_API_BASE_URL=https://your-api-host.example.com
 ```
+
+If `VITE_API_BASE_URL` is missing in a split deploy, the frontend will call `/api/...` on itself and fail with `404`.
 
 ## Configuration
 
@@ -116,6 +118,14 @@ Recommended split:
 
 The repo includes `render.yaml` for backend deployment scaffolding.
 
+Important deployment note:
+
+- this project is not a Vercel-only full-stack deploy while it still relies on Express, scheduled sync, and SQLite persistence
+- the frontend works well on Vercel
+- the backend should run on a persistent host such as Render or Railway
+- set `VITE_API_BASE_URL` in Vercel to the deployed backend URL
+- set `ALLOWED_ORIGINS` on the backend to your Vercel domain
+
 ## Validation
 
 ```bash
@@ -140,5 +150,4 @@ Better than:
 ## Repo Notes
 
 - The primary product is the contribution dashboard at `/`
-- Legacy launch-builder routes still exist in the codebase at `/launch-builder` and `/launch/:slug`
 - Older `Sunny` and `supratikspace` references should be treated as legacy copy, not the active product story

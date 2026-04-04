@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: martiancrown-contribution-dashboard
+    runtime: node
+    plan: starter
+    buildCommand: npm install && npm run build
+    startCommand: npm run server
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 24.13.0
+      - key: PORT
+        value: 3001
+      - key: CONTRIBUTION_SYNC_TIMEZONE
+        value: UTC
+      - key: CONTRIBUTION_SYNC_CRON
+        value: 0 6 * * *
+      - key: CONTRIBUTION_LOOKBACK_DAYS
+        value: 56

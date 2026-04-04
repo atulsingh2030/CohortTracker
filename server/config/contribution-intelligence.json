@@ -1,0 +1,18 @@
+{
+  "repositories": [],
+  "weights": {
+    "prMerged": 5,
+    "prOpened": 2,
+    "issuesClosed": 3,
+    "reviews": 2,
+    "commits": 0.5
+  },
+  "sync": {
+    "cron": "0 6 * * *",
+    "timezone": "UTC",
+    "lookbackDays": 56,
+    "bootstrapOnStart": true,
+    "staleAfterHours": 30,
+    "weekStartsOn": "monday"
+  }
+}

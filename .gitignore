@@ -1,0 +1,44 @@
+# Environment variables
+.env
+.env.local
+.env.production
+.env.*.local
+
+# Agent SaaS backends (deployed separately)
+high-converting-ugc-narrative-script-engineer-saas/
+*-saas/
+
+# Old nested app copy after repo re-root
+# (Removed to allow tracking supratikspace folder)
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Generated local preview data
+server/data/pages/*.json
+server/data/jobs/*.json
+server/data/*.sqlite
+server/config/contribution-intelligence.local.json
+
+# Python
+__pycache__/
+*.py[cod]
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Misc
+*.log
+.agent/

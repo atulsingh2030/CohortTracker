@@ -3,12 +3,9 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "workspaces": [
-    "supratikspace/teachers"
-  ],
   "scripts": {
     "dev": "concurrently \"npm:server:dev\" \"vite\"",
-    "build": "tsc && vite build && npm run build --workspace=supratikspace/teachers",
+    "build": "tsc && vite build",
     "preview": "vite preview",
     "server:dev": "node --watch server/index.mjs",
     "server": "node server/index.mjs",

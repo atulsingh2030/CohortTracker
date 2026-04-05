@@ -208,3 +208,5 @@ Better than:
 
 - The primary product is the contribution dashboard at `/`
 - Older `Sunny` and `supratikspace` references should be treated as legacy copy, not the active product story
+
+- i am adding a new line to understand the project
